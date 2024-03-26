@@ -1,26 +1,13 @@
-import { AddIcon } from "@chakra-ui/icons";
 import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
-import axios from "axios";
+import axios from "../config/AxiosConfig";
 import { useEffect, useState } from "react";
 import { getSender } from "../config/ChatLogics";
 import ChatLoading from "./ChatLoading";
-import GroupChatModal from "./miscellaneous/GroupChatModal";
-import { Avatar, Button } from "@chakra-ui/react";
+import { Avatar } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 
-const MyChats = ({ fetchAgain }) => {
-
-    const reload = function () {
-      if (!window.location.hash) {
-        window.location = window.location + "#loaded";
-        console.log("reloaded");
-        window.location.reload();
-      }
-    };
-
-    reload();
-
+const MyChats = () => {
   const [loggedUser, setLoggedUser] = useState();
 
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
@@ -28,18 +15,8 @@ const MyChats = ({ fetchAgain }) => {
   const toast = useToast();
 
   const fetchChats = async () => {
-    // console.log(user._id);
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const { data } = await axios.get(
-        "https://lazy-pear-sea-lion-tam.cyclic.app/api/chat",
-        config
-      );
+      const { data } = await axios.get("/api/chat");
       setChats(data);
     } catch (error) {
       toast({
@@ -57,49 +34,11 @@ const MyChats = ({ fetchAgain }) => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
     // eslint-disable-next-line
-  }, [fetchAgain]);
-
+  }, []);
 
   return (
     <>
-      {/* <Box
-        d={{ base: selectedChat ? "none" : "flex", md: "flex" }}
-        flexDir="column"
-        alignItems="center"
-        // p={3}
-        bg="transparent"
-        // w={{ base: "100%", md: "31%" }}
-        // borderRadius="lg"
-        // borderWidth="1px"
-        style={{ display: "flex" }}
-      > */}
-      {/* <Box
-        // pb={3}
-        // px={3}
-        fontSize={{ base: "28px", md: "30px" }}
-        fontFamily="Work sans"
-        d="flex"
-        w="100%"
-        justifyContent="space-between"
-        alignItems="center"
-        style={{ display: "flex" }}
-      >
-        <div className="display-small-screen">My Chats</div>
-      </Box> */}
-      <Box
-        // d="flex"
-        // flexDir="column"
-        // p={3}
-        // bg="#F8F8F8"
-        bg="#fff"
-        w="100%"
-        h="88vh"
-        // borderRadius="lg"
-        // border="black"
-        overflowY="scroll"
-        // style={{ dipslay: "flex" }}
-        // className="my-chats-stack"
-      >
+      <Box bg="#fff" w="100%" h="88vh" overflowY="scroll">
         {chats ? (
           <Stack overflowY="scroll">
             {chats.map((chat) => (
@@ -113,10 +52,10 @@ const MyChats = ({ fetchAgain }) => {
                     color: "green",
                   }}
                 >
-                  {chat.latestMessage.createdAt.substring(0, 10) ===
+                  {chat?.latestMessage?.createdAt.substring(0, 10) ===
                   new Date(Date.now()).toISOString().substring(0, 10)
-                    ? chat.latestMessage.createdAt.substring(11, 16)
-                    : chat.latestMessage.createdAt.substring(0, 10)}
+                    ? chat?.latestMessage?.createdAt.substring(11, 16)
+                    : chat?.latestMessage?.createdAt.substring(0, 10)}
                 </span>
                 <Box
                   onClick={() => setSelectedChat(chat)}
@@ -128,8 +67,6 @@ const MyChats = ({ fetchAgain }) => {
                   borderRadius="lg"
                   key={chat._id}
                   style={{ display: "flex" }}
-                  // border="1px"
-                  // borderColor="black.200"
                 >
                   <Avatar
                     mt="7px"
@@ -151,12 +88,10 @@ const MyChats = ({ fetchAgain }) => {
                         : chat.chatName
                     }
                     color="black"
-                    bg={`#${Math.floor(
-                      (getSender(loggedUser, chat.users).charCodeAt(0) / 1000) *
-                        18789500
-                    ).toString(16)}`}
+                    bg={`#${Math.floor((getSender(loggedUser, chat.users).charCodeAt(0) / 1000) * 18789500).toString(
+                      16
+                    )}`}
                   />
-                  {/* {console.log(new Date(Date.now()).toISOString().substring(0,10))} */}
                   <Text>
                     &nbsp;&nbsp;&nbsp;
                     {!chat.isGroupChat
@@ -168,11 +103,7 @@ const MyChats = ({ fetchAgain }) => {
                     {chat.latestMessage && (
                       <Text fontSize="xs">
                         &nbsp;&nbsp;&nbsp;
-                        <b>
-                          {chat.isGroupChat
-                            ? chat.latestMessage.sender.name + " : "
-                            : " "}
-                        </b>
+                        <b>{chat.isGroupChat ? chat.latestMessage.sender.name + " : " : " "}</b>
                         {chat.latestMessage.content.length > 50
                           ? chat.latestMessage.content.substring(0, 51) + "..."
                           : chat.latestMessage.content}
@@ -187,14 +118,15 @@ const MyChats = ({ fetchAgain }) => {
           <ChatLoading />
         )}
       </Box>
-      {/* </Box> */}
     </>
   );
 };
 
 export default MyChats;
 
- {/* */}
-      {
-        /* </Box> */
-      }
+{
+  /* */
+}
+{
+  /* </Box> */
+}

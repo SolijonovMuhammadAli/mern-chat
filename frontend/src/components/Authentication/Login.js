@@ -3,7 +3,7 @@ import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import { useState } from "react";
-import axios from "axios";
+import axios from "../../config/AxiosConfig";
 import { useToast } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 
@@ -11,7 +11,7 @@ const Login = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const toast = useToast();
-  const [email, setEmail] = useState();
+  const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +19,7 @@ const Login = () => {
 
   const submitHandler = async () => {
     setLoading(true);
-    if (!email || !password) {
+    if (!username || !password) {
       toast({
         title: "Please Fill all the Feilds",
         status: "warning",
@@ -31,53 +31,42 @@ const Login = () => {
       return;
     }
 
-    // console.log(email, password);
-    try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      };
-
-      const { data } = await axios.post(
-        "https://lazy-pear-sea-lion-tam.cyclic.app/api/user/login",
-        { email, password },
-        config
-      );
-
-      // console.log(JSON.stringify(data));
-      toast({
-        title: "Login Successful",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      setLoading(false);
-      history.push("/chats");
-    } catch (error) {
-      toast({
-        title: "Error Occured!",
-        description: error.response.data.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      setLoading(false);
-    }
+    // console.log(username, password);
+    await axios
+      .post("/auth/login", { username, password })
+      .then((res) => {
+        toast({
+          title: "Login Successful",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        localStorage.setItem("userInfo", JSON.stringify(res.data));
+        history.push("/chats");
+      })
+      .catch((err) => {
+        toast({
+          title: "Error Occured!",
+          description: err.response.data.error,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
     <VStack spacing="10px">
-      <FormControl id="email" isRequired>
-        <FormLabel>Email Address</FormLabel>
+      <FormControl id="username" isRequired>
+        <FormLabel>username Address</FormLabel>
         <Input
-          value={email}
-          type="email"
-          placeholder="Enter Your Email Address"
-          onChange={(e) => setEmail(e.target.value)}
+          value={username}
+          type="username"
+          placeholder="Enter Your username Address"
+          onChange={(e) => setUsername(e.target.value)}
           borderColor="black"
         />
       </FormControl>
@@ -98,13 +87,7 @@ const Login = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <Button
-        colorScheme="green"
-        width="100%"
-        style={{ marginTop: 15 }}
-        onClick={submitHandler}
-        isLoading={loading}
-      >
+      <Button colorScheme="green" width="100%" style={{ marginTop: 15 }} onClick={submitHandler} isLoading={loading}>
         Login
       </Button>
       <Button
@@ -112,8 +95,8 @@ const Login = () => {
         colorScheme="red"
         width="100%"
         onClick={() => {
-          setEmail("guest@example.com");
-          setPassword("123456");
+          setUsername("shaxnoz");
+          setPassword("1234456");
         }}
       >
         Get Guest User Credentials

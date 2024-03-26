@@ -35,7 +35,7 @@ const ProfileModal = ({ user, children }) => {
             justifyContent="center"
             style={{ display: "flex" }}
           >
-            {user.name}
+            {user.username}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody
@@ -50,24 +50,13 @@ const ProfileModal = ({ user, children }) => {
               mr={1}
               size="xl"
               cursor="pointer"
-              name={user?.name?.charAt(0)}
-              src={user?.name?.charAt(0)}
+              name={user?.profilePic}
+              src={user?.profilePic}
               color="white"
               borderRadius="full"
               boxSize="150px"
               bg="green"
             />
-            {/* <Image
-              borderRadius="full"
-              boxSize="150px"
-              src={user.name.charAt(0)}
-              alt={user.name.charAt(0)}
-              color="white"
-              bg="black"
-            /> */}
-            <Text fontSize={{ base: "28px", md: "30px" }} fontFamily="Work sans">
-              Email: {user.email}
-            </Text>
           </ModalBody>
           <ModalFooter>
             <Button onClick={onClose}>Close</Button>

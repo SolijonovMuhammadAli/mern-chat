@@ -2,26 +2,14 @@ import { Button } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
-import {
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-} from "@chakra-ui/menu";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-} from "@chakra-ui/modal";
+import { Menu, MenuButton, MenuDivider, MenuItem, MenuList } from "@chakra-ui/menu";
+import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { Tooltip } from "@chakra-ui/tooltip";
 import { SearchIcon, BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useHistory } from "react-router-dom";
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import axios from "../../config/AxiosConfig";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "../ChatLoading";
 import { Spinner } from "@chakra-ui/spinner";
@@ -34,20 +22,12 @@ import { ChatState } from "../../Context/ChatProvider";
 import GroupChatModal from "./GroupChatModal";
 
 function SideDrawer() {
-  const [messages, setMessages] = useState([]);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
 
-  const {
-    setSelectedChat,
-    user,
-    notification,
-    setNotification,
-    chats,
-    setChats,
-  } = ChatState();
+  const { setSelectedChat, user, notification, setNotification, chats, setChats } = ChatState();
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -79,10 +59,7 @@ function SideDrawer() {
         },
       };
 
-      const { data } = await axios.get(
-        `https://lazy-pear-sea-lion-tam.cyclic.app/api/user?search=${search}`,
-        config
-      );
+      const { data } = await axios.get(`/api/user?search=${search}`, config);
 
       setLoading(false);
       setSearchResult(data);
@@ -109,11 +86,7 @@ function SideDrawer() {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.post(
-        `https://lazy-pear-sea-lion-tam.cyclic.app/api/chat`,
-        { userId },
-        config
-      );
+      const { data } = await axios.post(`/api/chat`, { userId }, config);
 
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
@@ -140,43 +113,19 @@ function SideDrawer() {
         bg="#128c7e"
         w="100%"
         p="5px 10px 5px 10px"
-        // borderWidth="5px"
         style={{ display: "flex" }}
         color="white"
       >
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          {/* <Button variant="ghost" onClick={onOpen} leftIcon={<SearchIcon />}>
-            <Text
-              d={{ base: "none", md: "flex" }}
-              px={4}
-              style={{ display: "flex" }}
-            >
-              Search User
-            </Text>
-          </Button> */}
-          <Text
-            d={{ base: "none", md: "flex" }}
-            px={4}
-            style={{ display: "flex", fontWeight: "bold" }}
-          >
-            WhatsApp
+          <Text d={{ base: "none", md: "flex" }} px={4} style={{ display: "flex", fontWeight: "bold" }}>
+            Chat App
           </Text>
         </Tooltip>
 
-        {/* <Text
-          fontSize="2xl"
-          fontFamily="Work sans"
-          className="display-small-screen"
-        >
-          AD Chat App
-        </Text> */}
         <div>
           <Menu>
             <MenuButton p={1}>
-              <NotificationBadge
-                count={notification.length}
-                effect={Effect.SCALE}
-              />
+              <NotificationBadge count={notification.length} effect={Effect.SCALE} />
               <BellIcon fontSize="2xl" m={1} />
             </MenuButton>
             <MenuList pl={2} color="black">
@@ -197,44 +146,26 @@ function SideDrawer() {
             </MenuList>
           </Menu>
           <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-            <Button variant="ghost" onClick={onOpen} leftIcon={<SearchIcon />}>
-              {/* <Text
-              d={{ base: "none", md: "flex" }}
-              px={4}
-              style={{ display: "flex" }}
-            >
-              Search User
-            </Text> */}
-            </Button>
+            <Button variant="ghost" onClick={onOpen} leftIcon={<SearchIcon />}></Button>
           </Tooltip>
           <Menu>
-            <MenuButton
-              as={Button}
-              bg="transparent"
-              rightIcon={<ChevronDownIcon />}
-            >
+            <MenuButton as={Button} bg="transparent" rightIcon={<ChevronDownIcon />}>
               <Avatar
                 size="sm"
                 cursor="pointer"
-                name={user.name}
-                src={user.name}
+                name={user?.username}
+                src={user?.profilePic}
                 color="#128c7e"
                 bg="white"
               />
             </MenuButton>
             <MenuList color="black">
               <ProfileModal user={user}>
-                <MenuItem>My Profile</MenuItem>{" "}
+                <MenuItem>My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
               <GroupChatModal>
-                <Button
-                  d="flex"
-                  // fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-                  // rightIcon={<AddIcon />}
-                  style={{ display: "flex" }}
-                  variant="ghost"
-                >
+                <Button d="flex" style={{ display: "flex" }} variant="ghost">
                   New Group Chat
                 </Button>
               </GroupChatModal>
@@ -249,11 +180,7 @@ function SideDrawer() {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth="1px">
-            <Button
-              variant="link"
-              onClick={onOpen}
-              leftIcon={<SearchIcon />}
-            ></Button>
+            <Button variant="link" onClick={onOpen} leftIcon={<SearchIcon />}></Button>
             Search Users
           </DrawerHeader>
           <DrawerBody>
@@ -270,16 +197,10 @@ function SideDrawer() {
               <ChatLoading />
             ) : (
               searchResult?.map((user) => (
-                <UserListItem
-                  key={user._id}
-                  user={user}
-                  handleFunction={() => accessChat(user._id)}
-                />
+                <UserListItem key={user._id} user={user} handleFunction={() => accessChat(user._id)} />
               ))
             )}
-            {loadingChat && (
-              <Spinner ml="auto" d="flex" style={{ display: "flex" }} />
-            )}
+            {loadingChat && <Spinner ml="auto" d="flex" style={{ display: "flex" }} />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

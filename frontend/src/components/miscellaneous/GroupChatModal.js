@@ -58,10 +58,7 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(
-        `https://lazy-pear-sea-lion-tam.cyclic.app/api/user?search=${search}`,
-        config
-      );
+      const { data } = await axios.get(`/api/user?search=${search}`, config);
       console.log(data);
       setLoading(false);
       setSearchResult(data);
@@ -100,7 +97,7 @@ const GroupChatModal = ({ children }) => {
         },
       };
       const { data } = await axios.post(
-        `https://lazy-pear-sea-lion-tam.cyclic.app/api/chat/group`,
+        `/api/chat/group`,
         {
           name: groupChatName,
           users: JSON.stringify(selectedUsers.map((u) => u._id)),
@@ -145,18 +142,9 @@ const GroupChatModal = ({ children }) => {
             Create Group Chat
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody
-            d="flex"
-            flexDir="column"
-            alignItems="center"
-            style={{ display: "flex" }}
-          >
+          <ModalBody d="flex" flexDir="column" alignItems="center" style={{ display: "flex" }}>
             <FormControl>
-              <Input
-                placeholder="Chat Name"
-                mb={3}
-                onChange={(e) => setGroupChatName(e.target.value)}
-              />
+              <Input placeholder="Chat Name" mb={3} onChange={(e) => setGroupChatName(e.target.value)} />
             </FormControl>
             <FormControl>
               <Input
@@ -167,11 +155,7 @@ const GroupChatModal = ({ children }) => {
             </FormControl>
             <Box w="100%" d="flex" flexWrap="wrap" style={{ display: "flex" }}>
               {selectedUsers.map((u) => (
-                <UserBadgeItem
-                  key={u._id}
-                  user={u}
-                  handleFunction={() => handleDelete(u)}
-                />
+                <UserBadgeItem key={u._id} user={u} handleFunction={() => handleDelete(u)} />
               ))}
             </Box>
             {loading ? (
@@ -180,13 +164,7 @@ const GroupChatModal = ({ children }) => {
             ) : (
               searchResult
                 ?.slice(0, 4)
-                .map((user) => (
-                  <UserListItem
-                    key={user._id}
-                    user={user}
-                    handleFunction={() => handleGroup(user)}
-                  />
-                ))
+                .map((user) => <UserListItem key={user._id} user={user} handleFunction={() => handleGroup(user)} />)
             )}
           </ModalBody>
           <ModalFooter>

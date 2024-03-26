@@ -28,7 +28,7 @@ function Homepage() {
         style={{ display: "flex" }}
       >
         <Text fontSize="4xl" fontFamily="Work sans" color="green" fontWeight="bold">
-          WhatsApp
+          Chat App
         </Text>
       </Box>
       <Box bg="white" w="100%" p={4} borderRadius="lg" borderWidth="0px">

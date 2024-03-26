@@ -30,9 +30,15 @@ export const signup = async (req, res) => {
     });
 
     if (newUser) {
-      generateToken(newUser._id, res);
+      const token = generateToken(newUser._id);
       await newUser.save();
-      return res.status(201).json({ message: "Success" });
+      return res.status(201).json({
+        token,
+        userId: newUser._id,
+        fullname: newUser.fullname,
+        username: newUser.username,
+        profilePic: newUser.profilePic,
+      });
     } else {
       return res.status(400).json({ error: "Invalid user data" });
     }
@@ -54,9 +60,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ error: "Invalid username or password" });
     }
 
-    generateToken(user._id, res);
+    const token = generateToken(user._id);
     return res.status(200).json({
-      _id: user._id,
+      token,
+      userId: user._id,
       fullname: user.fullname,
       username: user.username,
       profilePic: user.profilePic,

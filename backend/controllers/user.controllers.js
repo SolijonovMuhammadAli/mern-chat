@@ -1,8 +1,9 @@
 import User from "../models/user.model.js";
 
 export const getUser = async (req, res) => {
+  const { user } = req;
   try {
-    const loggedUserId = req.user._id;
+    const loggedUserId = user._id;
     const allUser = await User.find({ _id: { $ne: loggedUserId } }).select("-password");
 
     res.status(200).json(allUser);

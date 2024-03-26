@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  isLastMessage,
-  isSameSender,
-  isSameSenderMargin,
-  isSameUser,
-  isLastMessageOnDifferentDateFromPrevMessage,
-  getSender,
-} from "../config/ChatLogics";
+import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../config/ChatLogics";
 import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import { ChatState } from "../Context/ChatProvider";
@@ -53,7 +46,6 @@ function Message({ messages, m, i }) {
           }}
         >
           {m.updatedAt.substring(11, 16)}
-          &nbsp; {m._id === user._id ? (array[i].readBy.includes(user._id) ? "seen" : "sent") : ""}
         </span>
       </span>
     </div>

@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import ChatLoading from "./ChatLoading";
 import { Avatar } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
+import { useSocketContext } from "../Context/SocketContext";
 
 const MyChats = () => {
   const { selectedChat, setSelectedChat, chats, setChats } = ChatState();
+  const { onlineUsers } = useSocketContext();
 
   const toast = useToast();
 
@@ -82,7 +84,7 @@ const MyChats = () => {
                   <Text>
                     &nbsp;&nbsp;&nbsp;
                     {chat.fullname}
-                    {chat.latestMessage && <Text fontSize="xs">last text</Text>}
+                    {onlineUsers.includes(chat._id) && <Text fontSize="xs">online</Text>}
                   </Text>
                 </Box>
               </div>

@@ -4,11 +4,12 @@ import { useHistory } from "react-router-dom";
 const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("userInfo")));
   const [notification, setNotification] = useState([]);
 
   const [selectedChat, setSelectedChat] = useState();
   const [chats, setChats] = useState();
+  const [messages, setMessages] = useState([]);
 
   const history = useHistory();
 
@@ -31,6 +32,8 @@ const ChatProvider = ({ children }) => {
         setNotification,
         chats,
         setChats,
+        setMessages,
+        messages,
       }}
     >
       {children}

@@ -2,39 +2,41 @@ import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "../config/AxiosConfig";
 import { useEffect, useState } from "react";
-import { getSender } from "../config/ChatLogics";
 import ChatLoading from "./ChatLoading";
 import { Avatar } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 
 const MyChats = () => {
-  const [loggedUser, setLoggedUser] = useState();
-
-  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const { selectedChat, setSelectedChat, chats, setChats } = ChatState();
 
   const toast = useToast();
 
-  const fetchChats = async () => {
-    try {
-      const { data } = await axios.get("/api/chat");
-      setChats(data);
-    } catch (error) {
-      toast({
-        title: "Error Occured!",
-        description: "Failed to Load the chats",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
-      });
-    }
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
+  const fetchUser = async () => {
+    setIsLoading(true);
+    await axios
+      .get("/user")
+      .then((res) => setChats(res.data))
+      .catch((err) =>
+        toast({
+          title: "Error Occured!",
+          description: "Failed to Load the chats",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom-left",
+        })
+      )
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
-    fetchChats();
-    // eslint-disable-next-line
+    fetchUser();
   }, []);
+
+  if (isLoading) return <h1>Loading...</h1>;
 
   return (
     <>
@@ -42,7 +44,7 @@ const MyChats = () => {
         {chats ? (
           <Stack overflowY="scroll">
             {chats.map((chat) => (
-              <div>
+              <div key={chat._id}>
                 <span
                   style={{
                     float: "right",
@@ -73,42 +75,14 @@ const MyChats = () => {
                     mr={1}
                     size="sm"
                     cursor="pointer"
-                    name={
-                      !chat.isGroupChat
-                        ? user._id === chat.users[0]._id
-                          ? chat.users[1].name
-                          : chat.users[0].name
-                        : chat.chatName
-                    }
-                    src={
-                      !chat.isGroupChat
-                        ? user._id === chat.users[0]._id
-                          ? chat.users[1].name
-                          : chat.users[0].name
-                        : chat.chatName
-                    }
+                    name={chat.profilePic}
+                    src={chat.profilePic}
                     color="black"
-                    bg={`#${Math.floor((getSender(loggedUser, chat.users).charCodeAt(0) / 1000) * 18789500).toString(
-                      16
-                    )}`}
                   />
                   <Text>
                     &nbsp;&nbsp;&nbsp;
-                    {!chat.isGroupChat
-                      ? user._id === chat.users[0]._id
-                        ? chat.users[1].name
-                        : chat.users[0].name
-                      : chat.chatName}
-                    {/* {chat.chatName}*/}
-                    {chat.latestMessage && (
-                      <Text fontSize="xs">
-                        &nbsp;&nbsp;&nbsp;
-                        <b>{chat.isGroupChat ? chat.latestMessage.sender.name + " : " : " "}</b>
-                        {chat.latestMessage.content.length > 50
-                          ? chat.latestMessage.content.substring(0, 51) + "..."
-                          : chat.latestMessage.content}
-                      </Text>
-                    )}
+                    {chat.fullname}
+                    {chat.latestMessage && <Text fontSize="xs">last text</Text>}
                   </Text>
                 </Box>
               </div>
@@ -123,10 +97,3 @@ const MyChats = () => {
 };
 
 export default MyChats;
-
-{
-  /* */
-}
-{
-  /* </Box> */
-}

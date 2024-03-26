@@ -1,15 +1,16 @@
 export const getSender = (loggedUser, users) => {
-  return users[0] === loggedUser ? users[0].name : users[1].name;
+  console.log(loggedUser);
+  console.log(users);
+  return users[0] === loggedUser ? users[0].username : users[1].username;
 };
 
 export const isSameSenderMargin = (messages, m, i, userId) => {
   // console.log(i === messages.length - 1);
-
-  if (i < messages.length - 1 && messages[i + 1].sender._id === m.sender._id && messages[i].sender._id !== userId)
-    return 33;
+  console.log(messages);
+  if (i < messages.length - 1 && messages[i + 1]._id === m._id && messages[i]._id !== userId) return 33;
   else if (
-    (i < messages.length - 1 && messages[i + 1].sender._id !== m.sender._id && messages[i].sender._id !== userId) ||
-    (i === messages.length - 1 && messages[i].sender._id !== userId)
+    (i < messages.length - 1 && messages[i + 1]._id !== m._id && messages[i]._id !== userId) ||
+    (i === messages.length - 1 && messages[i]._id !== userId)
   )
     return 0;
   else return "auto";
@@ -18,17 +19,13 @@ export const isSameSenderMargin = (messages, m, i, userId) => {
 export const isSameSender = (messages, m, i, userId) => {
   return (
     i < messages.length - 1 &&
-    (messages[i + 1].sender._id !== m.sender._id || messages[i + 1].sender._id === undefined) &&
-    messages[i].sender._id !== userId
+    (messages[i + 1]._id !== m._id || messages[i + 1]._id === undefined) &&
+    messages[i]._id !== userId
   );
 };
 
 export const isLastMessage = (messages, i, userId) => {
-  return (
-    i === messages.length - 1 &&
-    messages[messages.length - 1].sender._id !== userId &&
-    messages[messages.length - 1].sender._id
-  );
+  return i === messages.length - 1 && messages[messages.length - 1]._id !== userId && messages[messages.length - 1]._id;
 };
 
 export const isLastMessageOnDifferentDateFromPrevMessage = (messages) => {
@@ -40,7 +37,7 @@ export const isLastMessageOnDifferentDateFromPrevMessage = (messages) => {
 };
 
 export const isSameUser = (messages, m, i) => {
-  return i > 0 && messages[i - 1].sender._id === m.sender._id;
+  return i > 0 && messages[i - 1]._id === m._id;
 };
 
 export const getSenderFull = (loggedUser, users) => {

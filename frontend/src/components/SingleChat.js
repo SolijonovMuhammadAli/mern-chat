@@ -5,7 +5,7 @@ import "./styles.css";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { getSenderFull } from "../config/ChatLogics";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../config/AxiosConfig";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import Lottie from "react-lottie";
@@ -45,19 +45,12 @@ const SingleChat = () => {
     if (!selectedChat) return;
 
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
       setLoading(true);
 
-      const { data } = await axios.get(`/api/message/${selectedChat._id}`, config);
+      const { data } = await axios.get(`/message/${selectedChat._id}`);
+      console.log(data);
       setMessages(data);
-      setLoading(false);
-
-      socket.emit("join chat", selectedChat._id);
+      // socket.emit("join chat", selectedChat._id);
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -67,30 +60,20 @@ const SingleChat = () => {
         isClosable: true,
         position: "bottom",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
-      socket.emit("stop typing", selectedChat._id);
+      // socket.emit("stop typing", selectedChat._id);
       try {
-        const config = {
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
         setNewMessage("");
-        const { data } = await axios.post(
-          "/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat,
-            readBy: readers,
-          },
-          config
-        );
-        socket.emit("new message", data);
+        const { data } = await axios.post(`/message/send/${selectedChat._id}`, {
+          message: newMessage,
+        });
+        // socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (error) {
         toast({
@@ -116,12 +99,11 @@ const SingleChat = () => {
   //   // eslint-disable-next-line
   // }, []);
 
-  // useEffect(() => {
-  //   fetchMessages();
-
-  //   selectedChatCompare = selectedChat;
-  //   // eslint-disable-next-line
-  // }, [selectedChat]);
+  useEffect(() => {
+    fetchMessages();
+    selectedChatCompare = selectedChat;
+    // eslint-disable-next-line
+  }, [selectedChat]);
 
   // useEffect(() => {
   //   socket.on("message recieved", (newMessageRecieved) => {
@@ -142,22 +124,22 @@ const SingleChat = () => {
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
 
-    if (!socketConnected) return;
+    // if (!socketConnected) return;
 
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", selectedChat._id);
-    }
-    let lastTypingTime = new Date().getTime();
-    var timerLength = 3000;
-    setTimeout(() => {
-      var timeNow = new Date().getTime();
-      var timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", selectedChat._id);
-        setTyping(false);
-      }
-    }, timerLength);
+    // if (!typing) {
+    //   setTyping(true);
+    //   socket.emit("typing", selectedChat._id);
+    // }
+    // let lastTypingTime = new Date().getTime();
+    // var timerLength = 3000;
+    // setTimeout(() => {
+    //   var timeNow = new Date().getTime();
+    //   var timeDiff = timeNow - lastTypingTime;
+    //   if (timeDiff >= timerLength && typing) {
+    //     socket.emit("stop typing", selectedChat._id);
+    //     setTyping(false);
+    //   }
+    // }, timerLength);
   };
 
   return (
@@ -175,7 +157,8 @@ const SingleChat = () => {
             alignItems="center"
             style={{ display: "flex" }}
           >
-            {messages &&
+            {/* Text */}
+            {/* {messages &&
               (!selectedChat.isGroupChat ? (
                 <>
                   {user._id === selectedChat.users[0]._id ? selectedChat.users[1].name : selectedChat.users[0].name}
@@ -186,7 +169,7 @@ const SingleChat = () => {
                   {selectedChat.chatName.toUpperCase()}
                   <UpdateGroupChatModal fetchMessages={fetchMessages} />
                 </>
-              ))}
+              ))} */}
           </Text>
           <Box
             d="flex"
@@ -202,9 +185,7 @@ const SingleChat = () => {
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
               backgroundImage:
-                "url(" +
-                "https://wallpapers.com/images/file/whatsapp-chat-flying-bird-vector-rfw64608p6ous6hs.jpg" +
-                ")",
+                "url('https://wallpapers.com/images/file/whatsapp-chat-flying-bird-vector-rfw64608p6ous6hs.jpg')",
             }}
           >
             {loading ? (
@@ -228,7 +209,6 @@ const SingleChat = () => {
           </Box>
         </>
       ) : (
-        // to get socket.io on same page
         <Box d="flex" alignItems="center" justifyContent="center" h="100%" style={{ display: "flex" }}></Box>
       )}
     </>

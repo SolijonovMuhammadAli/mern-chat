@@ -34,7 +34,7 @@ export const senMessage = async (req, res) => {
 export const getMessage = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
-    const senderId = req.user._id;
+    const { _id: senderId } = req.user;
 
     const conversation = await Conversation.findOne({
       participants: { $all: [senderId, userToChatId] },
